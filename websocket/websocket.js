@@ -13,9 +13,11 @@ function validateUser(userId, password) {
 }
 
 function initial(app) {
-    const server = app
+    const server = app.listen(PORT);
+    console.log(`Listening on ${PORT}`)
+    /*const server = app
         .use((req, res) => res.sendFile(INDEX, { root: __dirname }))
-        .listen(PORT, () => console.log(`Listening on ${PORT}`));
+        .listen(PORT, () => console.log(`Listening on ${PORT}`));*/
 
     console.log("http server listening on %d", PORT)
 

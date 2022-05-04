@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import ControlItem from '../components/user-control-item';
-import logo from '../logo.svg';
 
 function Main() {
     const host = "";
@@ -15,8 +14,17 @@ function Main() {
     const getClient = async () => {
         const result = await fetch(host + "/api/clients");
         const data = await result.json();
-
         setData(data);
+    }
+
+    const clearStatus = async (userId) => {
+        console.log('clear status: ', userId);
+        clearInterval(buttonStatus[userId].timer);
+        buttonStatus[userId] = {
+            status: 'enable',
+            timer: null,
+        }
+        setButtonStatus(buttonStatus);
     }
 
     async function flush(userId) {
@@ -24,6 +32,12 @@ function Main() {
         const result = await fetch(host + "/api/clients/flush" + '?userId=' + userId);
 
         // set button status to disable and set timeout to enable
+        const timer = setInterval(clearStatus.bind(this, userId), 10000);
+        buttonStatus[userId] = {
+            status: 'disabled',
+            timer: timer,
+        }
+        setButtonStatus(buttonStatus);
 
         return result;
     }
@@ -31,11 +45,10 @@ function Main() {
     return (
         <div className="App">
             <header className="App-header">
-                <img src={logo} className="App-logo" alt="logo" />
-                {/*<p>{!data ? "Loading..." : data}</p>*/}
+                <img src={require('../toilet.jpeg')} className="App-logo-no-animation" alt="logo" />
                 {!data ? 'Loading...' : ''}
                 {data && data.length > 0 && data.map((item, index) => {
-                    return (<ControlItem status={buttonStatus[item]} userId={item} text={'Flush'} click={() => flush(item)}></ControlItem>)
+                    return (<ControlItem status={buttonStatus[item]} userId={item} text={'Flush'} click={() => flush(item)} disabled={false}></ControlItem>)
                 })}
             </header>
         </div>
