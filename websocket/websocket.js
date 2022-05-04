@@ -37,19 +37,24 @@ function initial(app) {
         console.log("websocket connection open")
         let userId = connectionParams ? connectionParams.userId : '';
         ws.on("message", function message(data) {
-            const jsonData = JSON.parse(data);
-            if (jsonData) {
-                console.log('command :', jsonData);
-                switch (jsonData.command) {
-                    case 'register': {
-                        if (validateUser(jsonData.userId, jsonData.password)) {
-                            connectionMap.set(jsonData.userId, ws);
-                            userId = jsonData.userId;
+            try {
+                const jsonData = JSON.parse(data);
+                if (jsonData) {
+                    console.log('command :', jsonData);
+                    switch (jsonData.command) {
+                        case 'register': {
+                            if (validateUser(jsonData.userId, jsonData.password)) {
+                                connectionMap.set(jsonData.userId, ws);
+                                userId = jsonData.userId;
+                            }
                         }
                     }
                 }
+                console.log('received: %s', data);
+            } catch (e) {
+                console.log('message error: ', e);
             }
-            console.log('received: %s', data);
+
         });
 
         ws.on("close", function() {
